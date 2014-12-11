@@ -12,6 +12,7 @@
 		var selectedText = '';
 		var withTwitter = false,
 			twitterScriptAdded = false;
+		var longURL, textURL;
 
 		var isFirefox = /Firefox/.test(navigator.userAgent);
 
@@ -65,11 +66,11 @@
 				$('.' + settings.highlightedClass).parent().addClass(settings.highlightedClass);
 			}
 
-			if (settings.defaultStyling){
-				$('.' + settings.highlightedClass).css({
-					"background-color": settings.highlightColor 
-				});
-			}
+			// if (settings.defaultStyling){
+			// 	$('.' + settings.highlightedClass).css({
+			// 		"background-color": settings.highlightColor 
+			// 	});
+			// }
 		}
 
 		$.fn.getSelected = function(){
@@ -145,11 +146,37 @@
 		$.fn.copyURL = function(){
 			$('.verbatim-text-area').remove();
 
-			var textURL = selectedText;
-			var longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
-			var twitterURL = window.location.origin + window.location.pathname + '#' + textURL;
+			textURL = selectedText;
+			longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
 
+			if (settings.bitlyToken){
+				$.getJSON(
+				    "https://api-ssl.bitly.com/v3/shorten?", 
+				    { 
+				        "access_token": settings.bitlyToken,
+				        "longUrl": longURL
+				    },
+				    function(response)
+				    {
+				    	if (response.status_code == 200){
+				    		longURL = response.data.url;
+				    		self.generateLink();
+				    	}
+				    }
+				);
+			} else {
+				longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
+				self.generateLink();
+			}
+		}
+
+		$.fn.generateLink = function(){
 			if (withTwitter){
+				if (textURL.length > 112){
+					textURL = textURL.substring(0, 112) + '...';
+				}
+
+				textURL = "\"" + textURL + "\""; 
 				var twitterLink = document.createElement('a');
 				twitterLink.href='https://twitter.com/intent/tweet?url=' + encodeURIComponent(longURL) + '&text=' + encodeURIComponent(textURL);
 				document.body.appendChild(twitterLink);
@@ -158,32 +185,12 @@
 				var textArea = document.createElement("textArea");
 
 				textArea.setAttribute("class", "verbatim-text-area");
+				textArea.setAttribute("wrap", "off");
 
-				if (settings.defaultStyling){
-					textArea.setAttribute("wrap", "off");
-				}
 				$('.' + settings.buttonClass).append(textArea);
 
-				if (settings.bitlyToken){
-					$.getJSON(
-					    "https://api-ssl.bitly.com/v3/shorten?", 
-					    { 
-					        "access_token": settings.bitlyToken,
-					        "longUrl": longURL
-					    },
-					    function(response)
-					    {
-					    	if (response.status_code == 200){
-					    		longURL = response.data.url;
-					    		$('.verbatim-text-area').val(longURL);	
-					    		textArea.select();
-					    	}
-					    }
-					);
-				} else{
-					$('.verbatim-text-area').val(longURL);
-					textArea.select();
-				}
+				$('.verbatim-text-area').val(longURL);
+				textArea.select();
 			}
 		}
 
