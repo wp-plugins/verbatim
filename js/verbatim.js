@@ -19,7 +19,6 @@
 		$.fn.findHash = function(sanitizedHash, settings){
 
 	        var sel = self.getSelected();
-	        console.log(sel);
 
 	        sel.collapse(document.body, 0);
 
@@ -42,7 +41,6 @@
 			        var anchorNode = sel.anchorNode.parentNode;
 			      	$(anchorNode).addClass(settings.highlightedClass);
 		            sel.collapseToEnd();
-		            console.log(sel);
 
 		             document.designMode = "off";
 		         }
@@ -195,7 +193,6 @@
 		}
 
 		$(settings.searchContainer).on('mousedown', function(event){
-			console.log(event);
 			downY = event.offsetY;
 		});
 
@@ -221,9 +218,6 @@
 
 }(window.jQuery);
 
-
-$(function(){
-
-    $(document).verbatim({
-    });
-})
+jQuery(document).ready(function(){
+	jQuery(document).verbatim();
+});
