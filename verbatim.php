@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Verbatim
- * Plugin URI: http://varbat.im
+ * Plugin URI: http://verbat.im
  * Description: Allows deep linking directly to post content
- * Version: 1.0
+ * Version: 1.1
  * Author: Ramsay Lanier and Maxim Leyzerovich of nclud Labs
  * Author URI: http://nclud.com
  * License: GPL
