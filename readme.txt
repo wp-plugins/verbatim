@@ -11,7 +11,7 @@ Verbatim allows people to deep link directly to your blog content.
 
 == Description ==
 
-![Alt text](/assets/scrrenshot-1.png)
+![Alt text](/assets/screenshot-1.png)
 
 [Verbatim](http://verbat.im) gives readers the ability to highlight any text content on your page and generate and share a link to that content. When other users click the link, the page will scroll to the content and highlight the selected link. Verbatim also allows direct tweeting of the link for instant sharing of content!
 
