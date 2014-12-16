@@ -11,9 +11,11 @@
 
 define( 'VRBTM_URL',     plugin_dir_url( __FILE__ )  );
 define( 'VRBTM_PATH',    plugin_dir_path( __FILE__ ) );
-define( 'VRBTM_VERSION', '0.1.0'                     );
+define( 'VRBTM_VERSION', '1.2'                     );
 
-add_action( 'plugins_loaded', 'vrbtm_init' );
+if (!is_admin()){
+	add_action( 'plugins_loaded', 'vrbtm_init' );
+}
 
 function vrbtm_init(){
 	wp_register_script('verbatim', VRBTM_URL . '/js/verbatim.js', array('jquery'), VRBTM_VERSION, false );
@@ -32,8 +34,7 @@ function vrbtm_init(){
 		'animationSpeed' => get_option('vrbtm_animation_speed', 2000),
 		'scrollingOffset' => get_option('vrbtm_scrolling_offset', 200),
 		'allowImages' => get_option('vrbtm_allow_images', 1),
-		'bitlyToken' => get_option('vrbtm_bitly_token', 0),
-
+		'bitlyToken' => get_option('vrbtm_bitly_token', 0)
 	);
 
 	wp_localize_script('verbatim', 'wordpressOptions', $vrbtm_options);
@@ -184,12 +185,19 @@ function register_vrbtm_settings(){
 }
 
 function vrbtm_settings_section_callback_function() {
-	echo '<p>Intro text for our settings section</p>';
+	echo '<p>Please refer to the <a href="https://github.com/nclud/verbatim">Verbatim github page</a> for questions referring to these options.</p>';
 }
 
+function load_custom_wp_admin_style($hook) {
+	if ('settings_page_verbatim_settings_page' != $hook){
+		return;
+	}
 
+	wp_enqueue_style('verbatim-admin', VRBTM_URL . '/css/verbatim-admin-style.css', array(), VRBTM_VERSION );
+}
 
 if (is_admin()){
+	add_action( 'admin_enqueue_scripts', 'load_custom_wp_admin_style' ); 
 	add_action( 'admin_menu', 'vrbtm_plugin_page' );
 	add_action( 'admin_init', 'register_vrbtm_settings' );
 }
