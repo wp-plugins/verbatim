@@ -13,42 +13,59 @@
 		var withTwitter = false,
 			twitterScriptAdded = false;
 		var longURL, textURL;
+		var isImage = false;
 
 		var isFirefox = /Firefox/.test(navigator.userAgent);
 
+		if (sanitizedHash.substr(0, 5) == "image"){
+			sanitizedHash = sanitizedHash.substr(7);
+			isImage = true;
+		}
+
 		$.fn.findHash = function(sanitizedHash, settings){
 
-	        var sel = self.getSelected();
+			if (isImage && settings.allowImages){
+				var targetImage = $("img[src$='" + sanitizedHash + "']");
+				targetImage.addClass(settings.highlightedClass);
 
-	        sel.collapse(document.body, 0);
+				targetImage.css({
+					"outline": "5px solid " + settings.highlightColor
+				})
+			}
 
-	        while (window.find(sanitizedHash)) {
+			else {
+		        var sel = self.getSelected();
 
-        		if (isFirefox){
-					document.body.contentEditable = "true";
+		        sel.collapse(document.body, 0);
 
-					document.execCommand("HiliteColor", false, settings.highlightColor);
-			        var anchorNode = sel.focusNode.parentNode;
-			      	$(anchorNode).addClass(settings.highlightedClass);
-		            sel.collapseToEnd();
+		        while (window.find(sanitizedHash)) {
 
-			      	document.body.contentEditable = "false";
+	        		if (isFirefox){
+						document.body.contentEditable = "true";
 
-				} else {
-					document.designMode = "on";
+						document.execCommand("HiliteColor", false, settings.highlightColor);
+				        var anchorNode = sel.focusNode.parentNode;
+				      	$(anchorNode).addClass(settings.highlightedClass);
+			            sel.collapseToEnd();
 
-		            document.execCommand("HiliteColor", false, settings.highlightColor);
-			        var anchorNode = sel.anchorNode.parentNode;
-			      	$(anchorNode).addClass(settings.highlightedClass);
-		            sel.collapseToEnd();
+				      	document.body.contentEditable = "false";
 
-		             document.designMode = "off";
-		         }
+					} else {
+						document.designMode = "on";
 
-	        }
+			            document.execCommand("HiliteColor", false, settings.highlightColor);
+				        var anchorNode = sel.anchorNode.parentNode;
+				      	$(anchorNode).addClass(settings.highlightedClass);
+			            sel.collapseToEnd();
 
-	        anchorNode = sel.anchorNode.parentNode;
-	      	$(anchorNode).addClass(settings.highlightedClass);
+			             document.designMode = "off";
+			         }
+
+		        }
+
+		        anchorNode = sel.anchorNode.parentNode;
+		      	$(anchorNode).addClass(settings.highlightedClass);
+			}
 
 			if (settings.animated){
 				$(function(){
@@ -63,12 +80,6 @@
 			if (settings.highlightParent){
 				$('.' + settings.highlightedClass).parent().addClass(settings.highlightedClass);
 			}
-
-			// if (settings.defaultStyling){
-			// 	$('.' + settings.highlightedClass).css({
-			// 		"background-color": settings.highlightColor 
-			// 	});
-			// }
 		}
 
 		$.fn.getSelected = function(){
@@ -87,14 +98,37 @@
 		}
 
 		$.fn.insertCopyButton = function(target){
-			if ($(target).hasClass(settings.selectedClass)){
-				$('.' + settings.buttonClass).remove();
-				$('.verbatim-text-area').remove();
-			} else {
-				$('.' + settings.buttonClass).remove();
-				$('.' + settings.selectedClass).contents().unwrap();
-				$('.verbatim-text-area').remove();
+
+			//reset
+			$('.' + settings.buttonClass).remove();
+			$('.verbatim-text-area').remove();
+
+			//if target is an image
+			if (settings.allowImages && $(target).is('img') && !$(target).hasClass(settings.selectedClass)){
+
+				var buttonContainer = document.createElement("div");
+				buttonContainer.setAttribute("class", settings.buttonClass);
+				buttonContainer.innerHTML = verbatimLogo + twitterLogo;
+
+				//get images position inside of it's parent element
+				var targetPos= $(target).position();
+
+				//append buttons to DOM before image target
+				$(target).before(buttonContainer);
+
+				//set button container to image targets top left corner;
+				$(buttonContainer).css({
+					"top": targetPos.top,
+					"left": targetPos.left
+				})
+
+				selectedText = "image: " + $(target).attr('src');
+			}
+
+			//if target is a text node
+			else if (!$(target).hasClass(settings.selectedClass)){
 				
+				$('.' + settings.selectedClass).contents().unwrap();
 
 				var buttonContainer = document.createElement("div");
 				buttonContainer.setAttribute("class", settings.buttonClass);
@@ -147,6 +181,8 @@
 			textURL = selectedText;
 			longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
 
+			console.log(longURL);
+
 			if (settings.bitlyToken){
 				$.getJSON(
 				    "https://api-ssl.bitly.com/v3/shorten?", 
@@ -192,7 +228,7 @@
 			}
 		}
 
-		$(settings.searchContainer).on('mousedown', function(event){
+		$(settings.searchContainer).on('mousedown', function(event){	
 			downY = event.offsetY;
 		});
 
@@ -217,6 +253,7 @@
 	}
 
 }(window.jQuery);
+
 
 jQuery(document).ready(function(){
 	jQuery(document).verbatim();

@@ -28,11 +28,12 @@ function vrbtm_init(){
 		'highlightColor' => get_option('vrbtm_highlighted_color', '#FFFF00'),
 		'selectedClass' => get_option('vrbtm_selected_class', 'verbatim-selected-text'),
 		'buttonClass' => get_option('vrbtm_button_class', 'verbatim-button-container'),
-		'defaultStyling' => get_option('vrbtm_default_styling', true),
 		'animated' => get_option('vrbtm_animated', true),
 		'animationSpeed' => get_option('vrbtm_animation_speed', 2000),
 		'scrollingOffset' => get_option('vrbtm_scrolling_offset', 200),
-		'bitlyToken' => get_option('vrbtm_bitly_token', 0)
+		'allowImages' => get_option('vrbtm_allow_images', 1),
+		'bitlyToken' => get_option('vrbtm_bitly_token', 0),
+
 	);
 
 	wp_localize_script('verbatim', 'wordpressOptions', $vrbtm_options);
@@ -120,14 +121,6 @@ function register_vrbtm_settings(){
 	);
 
 	add_settings_field(
-		'vrbtm_default_styling',
-		'Enable Default Styling',
-		'default_styling_callback_function',
-		'verbatim_settings_page',
-		'verbatim_settings_group'
-	);
-
-	add_settings_field(
 		'vrbtm_animated',
 		'Enable Amimated Scrolling To Content',
 		'animated_callback_function',
@@ -160,6 +153,14 @@ function register_vrbtm_settings(){
 	);
 
 	add_settings_field(
+		'vrbtm_allow_images',
+		'Allow users to link to images',
+		'allow_images_callback_function',
+		'verbatim_settings_page',
+		'verbatim_settings_group'
+	);
+
+	add_settings_field(
 		'vrbtm_bitly_token',
 		'Add Bitlye Token to Enable Short Links',
 		'bitly_token_callback_function',
@@ -175,10 +176,10 @@ function register_vrbtm_settings(){
 	register_setting( 'verbatim_settings_group', 'vrbtm_selected_class' );
 	register_setting( 'verbatim_settings_group', 'vrbtm_button_class' );
 	register_setting( 'verbatim_settings_group', 'vrbtm_highlight_parent' );
-	register_setting( 'verbatim_settings_group', 'vrbtm_default_styling' );
 	register_setting( 'verbatim_settings_group', 'vrbtm_animated' );
 	register_setting( 'verbatim_settings_group', 'vrbtm_animation_speed' );
 	register_setting( 'verbatim_settings_group', 'vrbtm_scrolling_offset' );
+	register_setting( 'verbatim_settings_group', 'vrbtm_allow_images' );
 	register_setting( 'verbatim_settings_group', 'vrbtm_bitly_token' );
 }
 
