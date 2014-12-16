@@ -1,0 +1,41 @@
+.verbatim-header{
+	background-color: #16161c;
+	padding: 2em;
+	text-align: center;
+}
+
+.verbatim-logo-image{
+	width: 100%;
+	max-width: 400px;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.verbatim-logo-image path{
+	fill: white;
+
+}
+
+.verbatim-form{
+	padding-left: 20px;
+}
+
+.verbatim-text{
+	color: #b2d3fc;
+	font-size: 1.3rem;
+	margin: 0;
+
+}
+
+.verbatim-link{
+	text-decoration: none;
+	color: #b3d88c;
+}
+
+.wrap{
+	margin: 0;
+}
+
+#wpcontent{
+	padding-left: 0;
+}
