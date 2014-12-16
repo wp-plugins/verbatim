@@ -33,3 +33,7 @@ e.g.
 
 = 1.0 =
 * Initial build of Verbatim
+= 1.1 =
+* Updated twitter functionality to include Bitly link and shorten selection to within 140 characters.
+= 1.2 =
+* Added ability to select and link to images as well as text

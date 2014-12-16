@@ -22,11 +22,11 @@
             </td>
         </tr>
 
-         <tr valign="top">
-            <th scope="row">Enable Default Styling</th>
+        <tr valign="top">
+            <th scope="row">Enable Users To Select and Share Images</th>
             <td>
-                <?php $default_styling = get_option('vrbtm_default_styling', 1); ?>
-                <input type="checkbox" name="vrbtm_default_styling" value='1' <?php checked($default_styling, 1);?> />
+                <?php $animated = get_option('vrbtm_allow_images', 1); ?>
+                <input type="checkbox" name="vrbtm_allow_images" value='1' <?php checked($allow_images, 1);?> />
             </td>
         </tr>
 

@@ -12,44 +12,60 @@
 		var selectedText = '';
 		var withTwitter = false,
 			twitterScriptAdded = false;
+		var longURL, textURL;
+		var isImage = false;
 
 		var isFirefox = /Firefox/.test(navigator.userAgent);
 
+		if (sanitizedHash.substr(0, 5) == "image"){
+			sanitizedHash = sanitizedHash.substr(7);
+			isImage = true;
+		}
+
 		$.fn.findHash = function(sanitizedHash, settings){
 
-	        var sel = self.getSelected();
-	        console.log(sel);
+			if (isImage && settings.allowImages){
+				var targetImage = $("img[src$='" + sanitizedHash + "']");
+				targetImage.addClass(settings.highlightedClass);
 
-	        sel.collapse(document.body, 0);
+				targetImage.css({
+					"outline": "5px solid " + settings.highlightColor
+				})
+			}
 
-	        while (window.find(sanitizedHash)) {
+			else {
+		        var sel = self.getSelected();
 
-        		if (isFirefox){
-					document.body.contentEditable = "true";
+		        sel.collapse(document.body, 0);
 
-					document.execCommand("HiliteColor", false, settings.highlightColor);
-			        var anchorNode = sel.focusNode.parentNode;
-			      	$(anchorNode).addClass(settings.highlightedClass);
-		            sel.collapseToEnd();
+		        while (window.find(sanitizedHash)) {
 
-			      	document.body.contentEditable = "false";
+	        		if (isFirefox){
+						document.body.contentEditable = "true";
 
-				} else {
-					document.designMode = "on";
+						document.execCommand("HiliteColor", false, settings.highlightColor);
+				        var anchorNode = sel.focusNode.parentNode;
+				      	$(anchorNode).addClass(settings.highlightedClass);
+			            sel.collapseToEnd();
 
-		            document.execCommand("HiliteColor", false, settings.highlightColor);
-			        var anchorNode = sel.anchorNode.parentNode;
-			      	$(anchorNode).addClass(settings.highlightedClass);
-		            sel.collapseToEnd();
-		            console.log(sel);
+				      	document.body.contentEditable = "false";
 
-		             document.designMode = "off";
-		         }
+					} else {
+						document.designMode = "on";
 
-	        }
+			            document.execCommand("HiliteColor", false, settings.highlightColor);
+				        var anchorNode = sel.anchorNode.parentNode;
+				      	$(anchorNode).addClass(settings.highlightedClass);
+			            sel.collapseToEnd();
 
-	        anchorNode = sel.anchorNode.parentNode;
-	      	$(anchorNode).addClass(settings.highlightedClass);
+			             document.designMode = "off";
+			         }
+
+		        }
+
+		        anchorNode = sel.anchorNode.parentNode;
+		      	$(anchorNode).addClass(settings.highlightedClass);
+			}
 
 			if (settings.animated){
 				$(function(){
@@ -63,12 +79,6 @@
 
 			if (settings.highlightParent){
 				$('.' + settings.highlightedClass).parent().addClass(settings.highlightedClass);
-			}
-
-			if (settings.defaultStyling){
-				$('.' + settings.highlightedClass).css({
-					"background-color": settings.highlightColor 
-				});
 			}
 		}
 
@@ -88,14 +98,37 @@
 		}
 
 		$.fn.insertCopyButton = function(target){
-			if ($(target).hasClass(settings.selectedClass)){
-				$('.' + settings.buttonClass).remove();
-				$('.verbatim-text-area').remove();
-			} else {
-				$('.' + settings.buttonClass).remove();
-				$('.' + settings.selectedClass).contents().unwrap();
-				$('.verbatim-text-area').remove();
+
+			//reset
+			$('.' + settings.buttonClass).remove();
+			$('.verbatim-text-area').remove();
+
+			//if target is an image
+			if (settings.allowImages && $(target).is('img') && !$(target).hasClass(settings.selectedClass)){
+
+				var buttonContainer = document.createElement("div");
+				buttonContainer.setAttribute("class", settings.buttonClass);
+				buttonContainer.innerHTML = verbatimLogo + twitterLogo;
+
+				//get images position inside of it's parent element
+				var targetPos= $(target).position();
+
+				//append buttons to DOM before image target
+				$(target).before(buttonContainer);
+
+				//set button container to image targets top left corner;
+				$(buttonContainer).css({
+					"top": targetPos.top,
+					"left": targetPos.left
+				})
+
+				selectedText = "image: " + $(target).attr('src');
+			}
+
+			//if target is a text node
+			else if (!$(target).hasClass(settings.selectedClass)){
 				
+				$('.' + settings.selectedClass).contents().unwrap();
 
 				var buttonContainer = document.createElement("div");
 				buttonContainer.setAttribute("class", settings.buttonClass);
@@ -145,11 +178,39 @@
 		$.fn.copyURL = function(){
 			$('.verbatim-text-area').remove();
 
-			var textURL = selectedText;
-			var longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
-			var twitterURL = window.location.origin + window.location.pathname + '#' + textURL;
+			textURL = selectedText;
+			longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
 
+			console.log(longURL);
+
+			if (settings.bitlyToken){
+				$.getJSON(
+				    "https://api-ssl.bitly.com/v3/shorten?", 
+				    { 
+				        "access_token": settings.bitlyToken,
+				        "longUrl": longURL
+				    },
+				    function(response)
+				    {
+				    	if (response.status_code == 200){
+				    		longURL = response.data.url;
+				    		self.generateLink();
+				    	}
+				    }
+				);
+			} else {
+				longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
+				self.generateLink();
+			}
+		}
+
+		$.fn.generateLink = function(){
 			if (withTwitter){
+				if (textURL.length > 112){
+					textURL = textURL.substring(0, 112) + '...';
+				}
+
+				textURL = "\"" + textURL + "\""; 
 				var twitterLink = document.createElement('a');
 				twitterLink.href='https://twitter.com/intent/tweet?url=' + encodeURIComponent(longURL) + '&text=' + encodeURIComponent(textURL);
 				document.body.appendChild(twitterLink);
@@ -158,37 +219,16 @@
 				var textArea = document.createElement("textArea");
 
 				textArea.setAttribute("class", "verbatim-text-area");
+				textArea.setAttribute("wrap", "off");
 
-				if (settings.defaultStyling){
-					textArea.setAttribute("wrap", "off");
-				}
 				$('.' + settings.buttonClass).append(textArea);
 
-				if (settings.bitlyToken){
-					$.getJSON(
-					    "https://api-ssl.bitly.com/v3/shorten?", 
-					    { 
-					        "access_token": settings.bitlyToken,
-					        "longUrl": longURL
-					    },
-					    function(response)
-					    {
-					    	if (response.status_code == 200){
-					    		longURL = response.data.url;
-					    		$('.verbatim-text-area').val(longURL);	
-					    		textArea.select();
-					    	}
-					    }
-					);
-				} else{
-					$('.verbatim-text-area').val(longURL);
-					textArea.select();
-				}
+				$('.verbatim-text-area').val(longURL);
+				textArea.select();
 			}
 		}
 
-		$(settings.searchContainer).on('mousedown', function(event){
-			console.log(event);
+		$(settings.searchContainer).on('mousedown', function(event){	
 			downY = event.offsetY;
 		});
 
@@ -215,8 +255,6 @@
 }(window.jQuery);
 
 
-$(function(){
-
-    $(document).verbatim({
-    });
-})
+jQuery(document).ready(function(){
+	jQuery(document).verbatim();
+});
