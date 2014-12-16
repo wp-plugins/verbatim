@@ -3,7 +3,7 @@
  * Plugin Name: Verbatim
  * Plugin URI: http://verbat.im
  * Description: Allows deep linking directly to post content
- * Version: 1.1
+ * Version: 1.2
  * Author: Ramsay Lanier and Maxim Leyzerovich of nclud Labs
  * Author URI: http://nclud.com
  * License: GPL
