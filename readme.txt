@@ -1,5 +1,5 @@
 === Plugin Name ===
-Contributors: ramsaylanier
+Contributors: ramsaylanier, duqe
 Tags: linking, twitter, bitly, content, blog
 Requires at least: 3.0.1
 Tested up to: 4.0
