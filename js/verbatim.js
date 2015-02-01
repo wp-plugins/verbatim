@@ -4,7 +4,6 @@
 	var downY, upY;
 
 	$.fn.verbatim = function(options){
-		var self = this;
 		var hash = window.location.hash;
 		hash = hash.replace("%C2%A0", "%20");
 		var sanitizedHash = decodeURIComponent(hash).substr(1);
@@ -34,7 +33,7 @@
 			}
 
 			else {
-		        var sel = self.getSelected();
+		        var sel = getSelected();
 
 		        sel.collapse(document.body, 0);
 
@@ -134,7 +133,7 @@
 				buttonContainer.setAttribute("class", settings.buttonClass);
 				buttonContainer.innerHTML = verbatimLogo + twitterLogo;
 				
-				var sel = self.getSelected();
+				var sel = getSelected();
 
 				if(!sel.isCollapsed){
 
@@ -194,13 +193,13 @@
 				    {
 				    	if (response.status_code == 200){
 				    		longURL = response.data.url;
-				    		self.generateLink();
+				    		generateLink();
 				    	}
 				    }
 				);
 			} else {
 				longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
-				self.generateLink();
+				generateLink();
 			}
 		}
 
@@ -237,19 +236,19 @@
 
 			if ($(event.target).is('#verbatimLogo')){
 				withTwitter = false;
-				self.copyURL();
+				copyURL();
 			} else if ($(event.target).is('#twitterLogo')){
 				withTwitter = true;
-				self.copyURL();
+				copyURL();
 			} else if ($(event.target).hasClass('verbatim-text-area')){
 				return false;
 			} else 
-				self.insertCopyButton(event.target);
+				insertCopyButton(event.target);
 
 		});
 
 		if (sanitizedHash)
-			self.findHash(sanitizedHash, settings);
+			findHash(sanitizedHash, settings);
 	}
 
 }(window.jQuery);
