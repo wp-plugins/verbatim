@@ -22,7 +22,7 @@
 			isImage = true;
 		}
 
-		$.fn.findHash = function(sanitizedHash, settings){
+		var findHash = function(sanitizedHash, settings){
 
 			if (isImage && settings.allowImages){
 				var targetImage = $("img[src$='" + sanitizedHash + "']");
@@ -82,7 +82,7 @@
 			}
 		}
 
-		$.fn.getSelected = function(){
+		var getSelected = function(){
 			if(window.getSelection)
 				return window.getSelection(); 
 			else if(document.getSelection)
@@ -97,7 +97,7 @@
 	        return false;
 		}
 
-		$.fn.insertCopyButton = function(target){
+		var insertCopyButton = function(target){
 
 			//reset
 			$('.' + settings.buttonClass).remove();
@@ -175,7 +175,7 @@
 		    } 
 		}
 
-		$.fn.copyURL = function(){
+		var copyURL = function(){
 			$('.verbatim-text-area').remove();
 
 			textURL = selectedText;
@@ -204,7 +204,7 @@
 			}
 		}
 
-		$.fn.generateLink = function(){
+		var generateLink = function(){
 			if (withTwitter){
 				if (textURL.length > 112){
 					textURL = textURL.substring(0, 112) + '...';
