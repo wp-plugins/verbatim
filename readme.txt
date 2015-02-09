@@ -39,3 +39,5 @@ e.g.
 * Updated twitter functionality to include Bitly link and shorten selection to within 140 characters.
 = 1.2 =
 * Added ability to select and link to images as well as text
+= 1.3 =
+* Several bug fixes
