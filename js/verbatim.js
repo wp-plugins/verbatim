@@ -4,7 +4,7 @@
 	var downY, upY;
 
 	$.fn.verbatim = function(options){
-		var self = this;
+		
 		var hash = window.location.hash;
 		hash = hash.replace("%C2%A0", "%20");
 		var sanitizedHash = decodeURIComponent(hash).substr(1);
@@ -22,7 +22,19 @@
 			isImage = true;
 		}
 
-		$.fn.findHash = function(sanitizedHash, settings){
+		var isIE = function(){
+		
+	      var ua = window.navigator.userAgent
+	      var msie = ua.indexOf ( "MSIE " )
+
+	      if ( msie > 0 )      // If Internet Explorer, return version number
+	         return parseInt (ua.substring (msie+5, ua.indexOf (".", msie )))
+	      else                 // If another browser, return 0
+	         return 0
+
+		}
+
+		var findHash = function(sanitizedHash, settings){
 
 			if (isImage && settings.allowImages){
 				var targetImage = $("img[src$='" + sanitizedHash + "']");
@@ -34,7 +46,7 @@
 			}
 
 			else {
-		        var sel = self.getSelected();
+		        var sel = getSelected();
 
 		        sel.collapse(document.body, 0);
 
@@ -82,7 +94,7 @@
 			}
 		}
 
-		$.fn.getSelected = function(){
+		var getSelected = function(){
 			if(window.getSelection)
 				return window.getSelection(); 
 			else if(document.getSelection)
@@ -97,7 +109,7 @@
 	        return false;
 		}
 
-		$.fn.insertCopyButton = function(target){
+		var insertCopyButton = function(target){
 
 			//reset
 			$('.' + settings.buttonClass).remove();
@@ -127,14 +139,13 @@
 
 			//if target is a text node
 			else if (!$(target).hasClass(settings.selectedClass)){
-				
 				$('.' + settings.selectedClass).contents().unwrap();
 
 				var buttonContainer = document.createElement("div");
 				buttonContainer.setAttribute("class", settings.buttonClass);
 				buttonContainer.innerHTML = verbatimLogo + twitterLogo;
 				
-				var sel = self.getSelected();
+				var sel = getSelected();
 
 				if(!sel.isCollapsed){
 
@@ -143,6 +154,7 @@
 
 						document.execCommand("HiliteColor", false, settings.highlightColor);
 				      	var anchorNode = sel.focusNode.parentNode;
+				      	var extentNode = sel.extentNode.parentNode;
 				      	appendButton();
 
 				      	document.body.contentEditable = "false";
@@ -151,6 +163,7 @@
 						document.designMode = "on";
 						document.execCommand("HiliteColor", false, settings.highlightColor);
 				      	var anchorNode = sel.anchorNode.parentNode;
+				      	var extentNode = sel.extentNode.parentNode;
 				      	appendButton();
 
 				      	document.designMode = "off";
@@ -163,6 +176,7 @@
 		    function appendButton(){
 		    	var target;
 		    	$(anchorNode).addClass(settings.selectedClass).append(buttonContainer);
+		    	$(extentNode).addClass(settings.selectedClass);
 
 		    	if ((upY - downY) > 15)
 		    		target = 0
@@ -175,13 +189,11 @@
 		    } 
 		}
 
-		$.fn.copyURL = function(){
+		var copyURL = function(){
 			$('.verbatim-text-area').remove();
 
 			textURL = selectedText;
 			longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
-
-			console.log(longURL);
 
 			if (settings.bitlyToken){
 				$.getJSON(
@@ -194,17 +206,17 @@
 				    {
 				    	if (response.status_code == 200){
 				    		longURL = response.data.url;
-				    		self.generateLink();
+				    		generateLink();
 				    	}
 				    }
 				);
 			} else {
 				longURL = window.location.origin + window.location.pathname + '#' + encodeURIComponent(textURL);
-				self.generateLink();
+				generateLink();
 			}
 		}
 
-		$.fn.generateLink = function(){
+		var generateLink = function(){
 			if (withTwitter){
 				if (textURL.length > 112){
 					textURL = textURL.substring(0, 112) + '...';
@@ -228,32 +240,35 @@
 			}
 		}
 
-		$(settings.searchContainer).on('mousedown', function(event){	
-			downY = event.offsetY;
-		});
+		if(! isIE()){
 
-		$(settings.searchContainer).on('mouseup', function(event){
-			upY = event.offsetY;
+			$(settings.searchContainer).on('mousedown', function(event){	
+				downY = event.offsetY;
+			});
 
-			if ($(event.target).is('#verbatimLogo')){
-				withTwitter = false;
-				self.copyURL();
-			} else if ($(event.target).is('#twitterLogo')){
-				withTwitter = true;
-				self.copyURL();
-			} else if ($(event.target).hasClass('verbatim-text-area')){
-				return false;
-			} else 
-				self.insertCopyButton(event.target);
+			$(settings.searchContainer).on('mouseup', function(event){
+				upY = event.offsetY;
 
-		});
+				if ($(event.target).is('#verbatimLogo')){
+					withTwitter = false;
+					copyURL();
+				} else if ($(event.target).is('#twitterLogo')){
+					withTwitter = true;
+					copyURL();
+				} else if ($(event.target).hasClass('verbatim-text-area')){
+					return false;
+				} else 
+					insertCopyButton(event.target);
 
-		if (sanitizedHash)
-			self.findHash(sanitizedHash, settings);
+			});
+
+			if (sanitizedHash)
+				findHash(sanitizedHash, settings);			
+		}
+
 	}
 
 }(window.jQuery);
-
 
 jQuery(document).ready(function(){
 	jQuery(document).verbatim();
