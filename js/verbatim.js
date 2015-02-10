@@ -52,6 +52,8 @@
 
 		        while (window.find(sanitizedHash)) {
 
+		        	document.body.spellcheck = false;
+
 	        		if (isFirefox){
 						document.body.contentEditable = "true";
 
@@ -149,12 +151,13 @@
 
 				if(!sel.isCollapsed){
 
+					document.body.spellcheck = false;
+
 					if (isFirefox){
 						document.body.contentEditable = "true";
 
 						document.execCommand("HiliteColor", false, settings.highlightColor);
 				      	var anchorNode = sel.focusNode.parentNode;
-				      	var extentNode = sel.extentNode.parentNode;
 				      	appendButton();
 
 				      	document.body.contentEditable = "false";
@@ -163,7 +166,6 @@
 						document.designMode = "on";
 						document.execCommand("hiliteColor", false, settings.highlightColor);
 				      	var anchorNode = sel.anchorNode.parentNode;
-				      	var extentNode = sel.extentNode.parentNode;
 				      	appendButton();
 
 				      	document.designMode = "off";
