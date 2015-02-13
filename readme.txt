@@ -2,7 +2,7 @@
 Contributors: ramsaylanier, duqe
 Tags: linking, twitter, bitly, content, blog
 Requires at least: 3.0.1
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -39,3 +39,7 @@ e.g.
 * Updated twitter functionality to include Bitly link and shorten selection to within 140 characters.
 = 1.2 =
 * Added ability to select and link to images as well as text
+= 1.3 =
+* Several bug fixes
+= 1.4 =
+* Updated user interface

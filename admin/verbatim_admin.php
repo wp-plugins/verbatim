@@ -114,7 +114,7 @@
         </tr>
 
         <tr valign="top">
-            <th scope="row">Default Color of Highlights</th>
+            <th scope="row">Default Color of Highlights (use either a color name or RGB value)</th>
             <td>
                 <input type="text" name="vrbtm_highlighted_color" value="<?php echo get_option('vrbtm_highlighted_color', '#FFFF00'); ?>" />
             </td>
