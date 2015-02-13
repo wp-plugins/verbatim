@@ -41,3 +41,5 @@ e.g.
 * Added ability to select and link to images as well as text
 = 1.3 =
 * Several bug fixes
+= 1.4 =
+* Updated user interface
