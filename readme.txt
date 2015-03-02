@@ -43,3 +43,5 @@ e.g.
 * Several bug fixes
 = 1.4 =
 * Updated user interface
+= 1.5 =
+* Added ability to use text/image selection on iOS/android devices

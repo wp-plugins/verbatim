@@ -13,6 +13,7 @@
 		var isImage = false;
 
 		var isFirefox = /Firefox/.test(navigator.userAgent);
+		var isiOS = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
 
 		if (sanitizedHash.substr(0, 5) == "image"){
 			sanitizedHash = sanitizedHash.substr(7);
@@ -110,7 +111,6 @@
 
 		var insertCopyButton = function(target){
 
-			//reset
 			$('.' + settings.buttonClass).removeClass('on-page');
 			setTimeout(function(){
 				$('.' + settings.buttonClass).remove();
@@ -122,8 +122,7 @@
 				buttonContainer.innerHTML = '<p class="verbatim-info">Share this selection:</p>'
 
 				//if target is an image
-				if (settings.allowImages && $(target).is('img') && !$(target).hasClass(settings.selectedClass)){
-						console.log('hi');
+				if (settings.allowImages && $(target).is('img')){
 						selectedText = "image: " + $(target).attr('src');
 						appendButton();
 				} else {
@@ -200,23 +199,62 @@
 			textURL = "\"" + textURL + "\""; 
 			var twitterLink = document.createElement('a');
 			twitterLink.setAttribute("class", 'verbatim-twitter-link');
+			twitterLink.setAttribute("target", "_blank");
 			twitterLink.href='https://twitter.com/intent/tweet?url=' + encodeURIComponent(longURL) + '&text=' + encodeURIComponent(textURL);
 			$('.' + settings.buttonClass).append(twitterLink);
 			$(twitterLink).append(twitterLogo);
+			twttr.widgets.load();
 		}
 
 		if(! isIE()){
 
-			$(settings.searchContainer).on('mouseup', function(event){
+			if (isiOS){
+				var timeout;
+				var selectable = false;
 
-				if ($(event.target).hasClass('verbatim-text-area')){
-					$(event.target).select();
-					return false;
-				} else {
-					insertCopyButton(event.target);
+				$(settings.searchContainer).on('touchend', function(event){
+					if ($(event.target).hasClass('verbatim-text-area')){
+						selectable = false;
+						$(event.target).select();
+						return false;
+					} else {
+						selectable = true;
+					}
+				});
+
+				function startCheck(){
+					resetCheck();
+					timeout = setTimeout(function(){
+						checkSelection()
+					}, 500);
 				}
-			});
 
+				function checkSelection(){
+					selectionChange = false;
+					insertCopyButton($('body'));
+				}
+
+				function resetCheck(){
+					clearTimeout(timeout);
+				}
+
+				document.addEventListener("selectionchange", function() {
+					if (selectable){
+						startCheck();
+						selectionChange = true;
+					}
+				}, false);
+			} else {
+				$(settings.searchContainer).on('mouseup', function(event){
+
+					if ($(event.target).hasClass('verbatim-text-area')){
+						$(event.target).select();
+						return false;
+					} else {
+						insertCopyButton(event.target);
+					}
+				});
+			}
 			if (sanitizedHash)
 				findHash(sanitizedHash, settings);			
 		}
@@ -224,6 +262,7 @@
 	}
 
 }(window.jQuery);
+
 
 jQuery(document).ready(function(){
 	jQuery(document).verbatim();

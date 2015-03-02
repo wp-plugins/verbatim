@@ -3,7 +3,7 @@
  * Plugin Name: Verbatim
  * Plugin URI: http://verbat.im
  * Description: Allows deep linking directly to post content
- * Version: 1.4
+ * Version: 1.5
  * Author: Ramsay Lanier and Maxim Leyzerovich of nclud Labs
  * Author URI: http://nclud.com
  * License: GPL
@@ -11,7 +11,7 @@
 
 define( 'VRBTM_URL',     plugin_dir_url( __FILE__ )  );
 define( 'VRBTM_PATH',    plugin_dir_path( __FILE__ ) );
-define( 'VRBTM_VERSION', '1.4'                     );
+define( 'VRBTM_VERSION', '1.5'                     );
 
 if (!is_admin()){
 	add_action( 'plugins_loaded', 'vrbtm_init' );
