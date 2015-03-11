@@ -5,7 +5,7 @@
 .verbatim-button-container{
 	position: fixed;
 	width: 100%;
-	background-color: $dark-blue;
+	background-color: #16161C;
 	bottom: 0px;
 	left: 0px;
 	padding: 5px;
@@ -44,7 +44,7 @@
 
 .verbatim-text-area{
 	position: relative;
-	background-color: $dark-blue;
+	background-color: #16161C;
 	border: 2px solid white;
 	color: white;
 	max-width: 140px;
